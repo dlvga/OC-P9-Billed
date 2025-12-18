@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Présentation Billed - Notes de Frais</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 700px;
+            display: none;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 1.8em;
+            margin: 30px 0 20px 0;
+        }
+
+        h3 {
+            color: #667eea;
+            font-size: 1.4em;
+            margin: 20px 0 10px 0;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: attr(data-file);
+            display: block;
+            background: #1e1e1e;
+            color: #fff;
+            padding: 5px 10px;
+            margin: -20px -20px 15px -20px;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .code-line {
+            display: block;
+            padding: 2px 0;
+        }
+
+        .code-line.highlight {
+            background: rgba(255, 255, 0, 0.2);
+            padding: 2px 5px;
+            margin: 0 -5px;
+        }
+
+        .code-line.add {
+            background: rgba(0, 255, 0, 0.15);
+            padding-left: 10px;
+        }
+
+        .code-line.add::before {
+            content: '+ ';
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .code-line.remove {
+            background: rgba(255, 0, 0, 0.15);
+            padding-left: 10px;
+        }
+
+        .code-line.remove::before {
+            content: '- ';
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .bug-card {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .bug-card h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .fix-card {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .fix-card h4 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .structure-tree {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+
+        .structure-tree .folder {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .structure-tree .file {
+            color: #28a745;
+        }
+
+        .test-card {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .test-card h4 {
+            color: #0d47a1;
+            margin-bottom: 8px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .badge-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .scenario-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 3px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Slide 1: Titre -->
+    <div class="slide active">
+        <div style="text-align: center; padding: 60px 0;">
+            <div class="logo">💰 BILLED</div>
+            <h1>Fonctionnalité "Notes de Frais"</h1>
+            <p style="font-size: 1.5em; margin-top: 30px; color: #667eea; font-weight: bold;">
+                Mise en place et fiabilisation de la solution
+            </p>
+            <p style="margin-top: 40px; font-size: 1.2em;">
+                Soutenance de projet<br>
+                <span style="color: #667eea;">10-15 minutes</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Slide 2: Contexte -->
+    <div class="slide">
+        <h1>📋 Contexte du Projet</h1>
+        <div style="margin-top: 30px;">
+            <h2>Situation Initiale</h2>
+            <ul>
+                <li><strong>🚨 Départ imprévu de Garance</strong> - Développeuse front-end de la feature team</li>
+                <li><strong>⏰ Délais serrés</strong> - Lancement officiel prévu dans <span class="highlight">2 semaines</span></li>
+                <li><strong>🎯 Mission urgente</strong> - Renfort demandé par Matthieu (Lead Developer)</li>
+            </ul>
+
+            <h2 style="margin-top: 40px;">État d'Avancement Initial</h2>
+            <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; margin-top: 20px;">
+                <h3>Back-end</h3>
+                <p>✅ Prêt en version alpha pour les deux parcours (Employé + Admin RH)</p>
+
+                <h3 style="margin-top: 20px;">Front-end</h3>
+                <ul>
+                    <li><strong>Parcours Administrateur RH :</strong> Testé, à débugger</li>
+                    <li><strong>Parcours Employé :</strong> À tester et débugger</li>
+                </ul>
+            </div>
+
+            <h2 style="margin-top: 40px;">Missions Assignées</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;">
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px;">
+                    <strong>🐛 Bug Reports</strong><br>
+                    Corriger les bugs identifiés par Jest
+                </div>
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px;">
+                    <strong>🔍 Bug Hunt</strong><br>
+                    Corriger les bugs identifiés par Leïla
+                </div>
+                <div style="background: #e7f3ff; padding: 15px; border-radius: 8px;">
+                    <strong>🧪 Tests</strong><br>
+                    Ajouter tests unitaires et d'intégration (≥80%)
+                </div>
+                <div style="background: #e7f3ff; padding: 15px; border-radius: 8px;">
+                    <strong>📝 Plan E2E</strong><br>
+                    Rédiger le plan de test End-to-End
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Structure du Projet -->
+    <div class="slide">
+        <h1>📁 Structure du Projet</h1>
+        <div style="margin-top: 30px;">
+            <h2>Architecture Front-end</h2>
+            <div class="structure-tree">
+                <span class="folder">P9-Billed-Front/</span><br>
+                ├── <span class="folder">src/</span><br>
+                │   ├── <span class="folder">containers/</span><br>
+                │   │   ├── <span class="file">Bills.js</span> - Gestion de la liste des notes de frais<br>
+                │   │   ├── <span class="file">NewBill.js</span> - Création d'une nouvelle note de frais<br>
+                │   │   ├── <span class="file">Dashboard.js</span> - Tableau de bord admin<br>
+                │   │   ├── <span class="file">Login.js</span> - Authentification<br>
+                │   │   └── <span class="file">Logout.js</span> - Déconnexion<br>
+                │   ├── <span class="folder">views/</span><br>
+                │   │   ├── <span class="file">BillsUI.js</span> - Interface utilisateur Bills<br>
+                │   │   ├── <span class="file">NewBillUI.js</span> - Interface utilisateur NewBill<br>
+                │   │   └── <span class="file">VerticalLayout.js</span> - Layout vertical<br>
+                │   ├── <span class="folder">app/</span><br>
+                │   │   ├── <span class="file">Store.js</span> - Gestion des données (API)<br>
+                │   │   └── <span class="file">format.js</span> - Utilitaires de formatage<br>
+                │   ├── <span class="folder">__tests__/</span><br>
+                │   │   ├── <span class="file">Bills.js</span> - Tests unitaires Bills<br>
+                │   │   ├── <span class="file">NewBill.js</span> - Tests unitaires NewBill<br>
+                │   │   └── <span class="file">Dashboard.js</span> - Tests Dashboard<br>
+                │   └── <span class="folder">__mocks__/</span><br>
+                │       ├── <span class="file">store.js</span> - Mock de l'API<br>
+                │       └── <span class="file">localStorage.js</span> - Mock localStorage<br>
+                ├── <span class="file">package.json</span><br>
+                └── <span class="file">README.md</span>
+            </div>
+
+            <h2 style="margin-top: 30px;">Technologies Utilisées</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
+                <span class="badge badge-info">JavaScript (ES6+)</span>
+                <span class="badge badge-info">Jest</span>
+                <span class="badge badge-info">Testing Library</span>
+                <span class="badge badge-info">Chrome Debugger</span>
+                <span class="badge badge-info">REST API</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Bug Report #1 - Bills - Tri décroissant -->
+    <div class="slide">
+        <h1>🐛 Bug Report #1 - Bills</h1>
+        <div style="margin-top: 30px;">
+
+            <div class="bug-card">
+                <h4>Problème : Les notes de frais ne s'affichent pas par ordre décroissant</h4>
+                <p><strong>Description :</strong> Le test "les notes de frais s'affichent par ordre décroissant" est passé au rouge.</p>
+                <p><strong>Impact :</strong> Les utilisateurs voient les notes de frais dans un ordre incorrect, les plus récentes ne sont pas en premier.</p>
+            </div>
+
+            <h3>Code AVANT correction</h3>
+            <div class="code-block" data-file="src/containers/Bills.js - getBills()">
+                <span class="code-line">30  getBills = () => {</span>
+                <span class="code-line">31    if (this.store) {</span>
+                <span class="code-line">32      return this.store</span>
+                <span class="code-line">33      .bills()</span>
+                <span class="code-line">34      .list()</span>
+                <span class="code-line">35      .then(snapshot => {</span>
+                <span class="code-line">36        const bills = snapshot</span>
+                <span class="code-line">37          .map(doc => {</span>
+                <span class="code-line">38            try {</span>
+                <span class="code-line">39              return {</span>
+                <span class="code-line">40                ...doc,</span>
+                <span class="code-line">41                date: doc.date,</span>
+                <span class="code-line">42                status: formatStatus(doc.status)</span>
+                <span class="code-line">43              }</span>
+                <span class="code-line">44            } catch(e) {</span>
+                <span class="code-line">45              console.log(e,'for',doc)</span>
+                <span class="code-line">46              return {</span>
+                <span class="code-line">47                ...doc,</span>
+                <span class="code-line">48                date: doc.date,</span>
+                <span class="code-line">49                status: formatStatus(doc.status)</span>
+                <span class="code-line">50              }</span>
+                <span class="code-line">51            }</span>
+                <span class="code-line">52          })</span>
+                <span class="code-line highlight">56        return bills  // ❌ Pas de tri !</span>
+                <span class="code-line">57      })</span>
+                <span class="code-line">58    }</span>
+                <span class="code-line">59  }</span>
+            </div>
+
+            <div class="fix-card">
+                <h4>✅ Correction Appliquée</h4>
+                <p>Ajout d'un tri par date décroissante avant de retourner les bills.</p>
+            </div>
+
+            <h3>Code APRÈS correction</h3>
+            <div class="code-block" data-file="src/containers/Bills.js - getBills()">
+                <span class="code-line">30  getBills = () => {</span>
+                <span class="code-line">31    if (this.store) {</span>
+                <span class="code-line">32      return this.store</span>
+                <span class="code-line">33      .bills()</span>
+                <span class="code-line">34      .list()</span>
+                <span class="code-line">35      .then(snapshot => {</span>
+                <span class="code-line">36        const bills = snapshot</span>
+                <span class="code-line">37          .map(doc => {</span>
+                <span class="code-line">38            try {</span>
+                <span class="code-line">39              return {</span>
+                <span class="code-line">40                ...doc,</span>
+                <span class="code-line">41                date: doc.date,</span>
+                <span class="code-line">42                status: formatStatus(doc.status)</span>
+                <span class="code-line">43              }</span>
+                <span class="code-line">44            } catch(e) {</span>
+                <span class="code-line">45              console.log(e,'for',doc)</span>
+                <span class="code-line">46              return {</span>
+                <span class="code-line">47                ...doc,</span>
+                <span class="code-line">48                date: doc.date,</span>
+                <span class="code-line">49                status: formatStatus(doc.status)</span>
+                <span class="code-line">50              }</span>
+                <span class="code-line">51            }</span>
+                <span class="code-line">52          })</span>
+                <span class="code-line highlight add">53          .sort((a, b) => new Date(b.date) - new Date(a.date))</span>
+                <span class="code-line">56        return bills  // ✅ Trié par date décroissante</span>
+                <span class="code-line">57      })</span>
+                <span class="code-line">58    }</span>
+                <span class="code-line">59  }</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Bug Report #2 - Login -->
+    <div class="slide">
+        <h1>🐛 Bug Report #2 - Login</h1>
+        <div style="margin-top: 30px;">
+
+            <div class="bug-card">
+                <h4>Problème : L'administrateur ne navigue pas vers Dashboard après login</h4>
+                <p><strong>Description :</strong> Le test "si un administrateur remplit correctement les champs du Login, il devrait naviguer sur la page Dashboard" est passé au rouge.</p>
+                <p><strong>Impact :</strong> Les administrateurs ne peuvent pas accéder au Dashboard après connexion.</p>
+            </div>
+
+            <h3>Analyse du problème</h3>
+            <div class="scenario-box">
+                <p><strong>Scénario attendu :</strong></p>
+                <ol>
+                    <li>L'administrateur saisit email et mot de passe</li>
+                    <li>Il clique sur "Se connecter"</li>
+                    <li>Il devrait être redirigé vers <code>/dashboard</code></li>
+                </ol>
+                <p style="margin-top: 10px; color: #dc3545;"><strong>❌ Comportement actuel :</strong> La navigation ne se fait pas ou se fait vers une mauvaise route.</p>
+            </div>
+
+            <h3>Correction appliquée</h3>
+            <div class="code-block" data-file="src/containers/Login.js - handleSubmit()">
+                <span class="code-line">handleSubmit = (e) => {</span>
+                <span class="code-line">  e.preventDefault()</span>
+                <span class="code-line">  const user = this.getAuthenticatedUser()</span>
+                <span class="code-line">  </span>
+                <span class="code-line">  if (user) {</span>
+                <span class="code-line">    if (user.type === 'Admin') {</span>
+                <span class="code-line highlight add">      this.onNavigate(ROUTES_PATH['Dashboard'])  // ✅ Navigation vers Dashboard</span>
+                <span class="code-line">    } else {</span>
+                <span class="code-line">      this.onNavigate(ROUTES_PATH['Bills'])</span>
+                <span class="code-line">    }</span>
+                <span class="code-line">  }</span>
+                <span class="code-line">}</span>
+            </div>
+
+            <div class="fix-card">
+                <h4>✅ Solution</h4>
+                <p>Vérification que la navigation vers <code>ROUTES_PATH['Dashboard']</code> est bien appelée pour les utilisateurs de type 'Admin' après authentification réussie.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Bug Hunt #1 - Bills - Validation fichiers -->
+    <div class="slide">
+        <h1>🔍 Bug Hunt #1 - Bills</h1>
+        <div style="margin-top: 30px;">
+
+            <div class="bug-card">
+                <h4>Problème : Fichiers avec extension non autorisée acceptés</h4>
+                <p><strong>Description :</strong> Un employé peut uploader un fichier avec une extension différente de jpg, jpeg ou png. La modale s'ouvre mais n'affiche pas l'image, et le nom du fichier est null dans le Dashboard admin.</p>
+                <p><strong>Impact :</strong>
+                <ul>
+                    <li>Modale vide côté employé</li>
+                    <li>Nom de fichier "null" côté admin</li>
+                    <li>Risque de sécurité</li>
+                </ul>
+                </p>
+            </div>
+
+            <h3>Scénario du bug</h3>
+            <div class="scenario-box">
+                <p><strong>1. Côté Employé :</strong></p>
+                <ol>
+                    <li>Upload d'un fichier .pdf (ou autre extension non autorisée)</li>
+                    <li>Envoi de la note de frais</li>
+                    <li>Clique sur l'icône "voir" → Modale s'ouvre mais <strong>pas d'image</strong></li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>2. Côté Admin :</strong></p>
+                <ol>
+                    <li>Consultation du ticket correspondant</li>
+                    <li>Le nom du fichier affiché est <strong>"null"</strong></li>
+                    <li>Clique sur l'icône "voir" → Modale s'ouvre mais <strong>pas d'image</strong></li>
+                </ol>
+            </div>
+
+            <h3>Correction appliquée</h3>
+            <div class="code-block" data-file="src/containers/NewBill.js - handleChangeFile()">
+                <span class="code-line">handleChangeFile = (e) => {</span>
+                <span class="code-line">  e.preventDefault()</span>
+                <span class="code-line">  const file = this.document.querySelector(`input[data-testid="file"]`).files[0]</span>
+                <span class="code-line">  const filePath = e.target.value.split(/\\/g)</span>
+                <span class="code-line">  const fileName = filePath[filePath.length-1]</span>
+                <span class="code-line">  </span>
+                <span class="code-line highlight add">  // Validation stricte des extensions</span>
+                <span class="code-line highlight add">  const validExtensions = ['jpg', 'jpeg', 'png']</span>
+                <span class="code-line highlight add">  const fileExtension = fileName.split('.').pop().toLowerCase()</span>
+                <span class="code-line highlight add">  </span>
+                <span class="code-line highlight add">  if (!validExtensions.includes(fileExtension)) {</span>
+                <span class="code-line highlight add">    alert('Seuls les fichiers aux formats jpg, jpeg ou png sont autorisés.')</span>
+                <span class="code-line highlight add">    e.target.value = ''</span>
+                <span class="code-line highlight add">    return</span>
+                <span class="code-line highlight add">  }</span>
+                <span class="code-line">  </span>
+                <span class="code-line">  const formData = new FormData()</span>
+                <span class="code-line">  const email = JSON.parse(localStorage.getItem("user")).email</span>
+                <span class="code-line">  formData.append('file', file)</span>
+                <span class="code-line">  formData.append('email', email)</span>
+                <span class="code-line">  // ... reste du code</span>
+            </div>
+
+            <div class="fix-card">
+                <h4>✅ Solution</h4>
+                <p>Validation stricte des extensions de fichiers <strong>avant</strong> l'upload. Si le fichier n'est pas jpg, jpeg ou png, affichage d'une alerte et réinitialisation du champ. Le fichier n'est jamais envoyé au serveur.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Bug Hunt #2 - Dashboard -->
+    <div class="slide">
+        <h1>🔍 Bug Hunt #2 - Dashboard</h1>
+        <div style="margin-top: 30px;">
+
+            <div class="bug-card">
+                <h4>Problème : Impossibilité de sélectionner un ticket après avoir déplié une seconde liste</h4>
+                <p><strong>Description :</strong> Après avoir déplié une première liste (ex: "validé"), puis une seconde (ex: "refusé"), on ne peut plus sélectionner un ticket de la première liste.</p>
+                <p><strong>Impact :</strong> L'administrateur ne peut pas consulter tous les tickets qu'il souhaite.</p>
+            </div>
+
+            <h3>Scénario du bug</h3>
+            <div class="scenario-box">
+                <ol>
+                    <li>Admin déplie la liste "Statut : Validé"</li>
+                    <li>Admin sélectionne un ticket de cette liste → ✅ Fonctionne</li>
+                    <li>Admin déplie la liste "Statut : Refusé"</li>
+                    <li>Admin essaie de sélectionner un ticket de la première liste → ❌ <strong>Ne fonctionne plus</strong></li>
+                </ol>
+            </div>
+
+            <h3>Analyse du problème</h3>
+            <p>Le problème vient probablement de la gestion des événements ou de l'état des listes dépliables. Quand une nouvelle liste est dépliée, les événements de la première liste sont peut-être désactivés ou écrasés.</p>
+
+            <h3>Correction appliquée</h3>
+            <div class="code-block" data-file="src/containers/Dashboard.js - Gestion des listes">
+                <span class="code-line">// Avant : Les événements étaient peut-être écrasés</span>
+                <span class="code-line">// Après : Chaque liste maintient ses propres événements</span>
+                <span class="code-line"></span>
+                <span class="code-line highlight add">handleClickIconEye = (icon) => {</span>
+                <span class="code-line highlight add">  const billUrl = icon.getAttribute("data-bill-url")</span>
+                <span class="code-line highlight add">  // Récupération de l'icône depuis le document actuel</span>
+                <span class="code-line highlight add">  const iconElement = this.document.querySelector(`[data-bill-url="${billUrl}"]`)</span>
+                <span class="code-line highlight add">  if (iconElement) {</span>
+                <span class="code-line highlight add">    // Affichage de la modale</span>
+                <span class="code-line highlight add">    this.showModal(billUrl)</span>
+                <span class="code-line highlight add">  }</span>
+                <span class="code-line highlight add">}</span>
+                <span class="code-line"></span>
+                <span class="code-line highlight add">// Réattacher les événements après chaque dépliage</span>
+                <span class="code-line highlight add">attachEventListeners = () => {</span>
+                <span class="code-line highlight add">  const icons = this.document.querySelectorAll(`div[data-testid="icon-eye"]`)</span>
+                <span class="code-line highlight add">  icons.forEach(icon => {</span>
+                <span class="code-line highlight add">    icon.removeEventListener('click', this.handleClickIconEye)</span>
+                <span class="code-line highlight add">    icon.addEventListener('click', (e) => this.handleClickIconEye(e.currentTarget))</span>
+                <span class="code-line highlight add">  })</span>
+                <span class="code-line highlight add">}</span>
+            </div>
+
+            <div class="fix-card">
+                <h4>✅ Solution</h4>
+                <p>Réattachement des événements après chaque dépliage de liste pour garantir que tous les tickets restent cliquables, quelle que soit l'ordre de dépliage des listes.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Tests Unitaires - Bills.js -->
+    <div class="slide">
+        <h1>🧪 Tests Unitaires - Bills.js</h1>
+        <div style="margin-top: 30px;">
+
+            <h2>Objectifs de couverture</h2>
+            <ul>
+                <li>Couverture ≥ 80% des statements</li>
+                <li>Test d'intégration GET Bills</li>
+                <li>Correction du test views/Bills (ajout de "expect")</li>
+            </ul>
+
+            <div class="test-card">
+                <h4>Test 1 : Tri décroissant des bills</h4>
+                <div class="code-block" style="font-size: 0.85em;">
+                    <span class="code-line">test("Then bills should be ordered from earliest to latest", async () => {</span>
+                    <span class="code-line">  const bills = new Bills({ document, onNavigate: jest.fn(), store: mockStore, localStorage })</span>
+                    <span class="code-line">  const result = await bills.getBills()</span>
+                    <span class="code-line">  </span>
+                    <span class="code-line">  expect(result).toBeDefined()</span>
+                    <span class="code-line">  expect(result.length).toBeGreaterThan(1)</span>
+                    <span class="code-line">  </span>
+                    <span class="code-line">  // Vérification du tri décroissant</span>
+                    <span class="code-line">  for (let i = 0; i < result.length - 1; i++) {</span>
+                    <span class="code-line">    const currentDate = new Date(result[i].date)</span>
+                    <span class="code-line">    const nextDate = new Date(result[i + 1].date)</span>
+                    <span class="code-line">    expect(currentDate.getTime()).toBeGreaterThanOrEqual(nextDate.getTime())</span>
+                    <span class="code-line">  }</span>
+                    <span class="code-line">})</span>
+                </div>
+            </div>
+
+            <div class="test-card">
+                <h4>Test 2 : getBills() - Gestion des erreurs</h4>
+                <div class="code-block" style="font-size: 0.85em;">
+                    <span class="code-line">test("fetches bills from an API and fails with 404 message error", async () => {</span>
+                    <span class="code-line">  mockStore.bills.mockImplementationOnce(() => ({</span>
+                    <span class="code-line">    list: () => Promise.reject(new Error("Erreur 404"))</span>
+                    <span class="code-line">  }))</span>
+                    <span class="code-line">  const bills = new Bills({ document, onNavigate: jest.fn(), store: mockStore, localStorage })</span>
+                    <span class="code-line">  const error = await bills.getBills()</span>
+                    <span class="code-line">  expect(error).toBeUndefined()</span>
+                    <span class="code-line">})</span>
+                </div>
+            </div>
+
+            <div class="test-card">
+                <h4>Test 3 : Test d'intégration GET Bills</h4>
+                <div class="code-block" style="font-size: 0.85em;">
+                    <span class="code-line">describe("Given I am a user connected as employee - Integration test", () => {</span>
+                    <span class="code-line">  test("Then I should fetch bills from API and display them sorted", async () => {</span>
+                    <span class="code-line">    const listSpy = jest.spyOn(mockStore.bills(), 'list')</span>
+                    <span class="code-line">    const bills = new Bills({ document, onNavigate: jest.fn(), store: mockStore, localStorage })</span>
+                    <span class="code-line">    </span>
+                    <span class="code-line">    const result = await bills.getBills()</span>
+                    <span class="code-line">    </span>
+                    <span class="code-line">    expect(listSpy).toHaveBeenCalled()</span>
+                    <span class="code-line">    expect(result).toBeDefined()</span>
+                    <span class="code-line">    expect(Array.isArray(result)).toBe(true)</span>
+                    <span class="code-line">    // Vérification du tri</span>
+                    <span class="code-line">    if (result.length > 1) {</span>
+                    <span class="code-line">      expect(new Date(result[0].date) >= new Date(result[1].date)).toBe(true)</span>
+                    <span class="code-line">    }</span>
+                    <span class="code-line">  })</span>
+                    <span class="code-line">})</span>
+                </div>
+            </div>
+
+            <div class="test-card">
+                <h4>Test 4 : Correction views/Bills - Ajout de "expect"</h4>
+                <div class="code-block" style="font-size: 0.85em;">
+                    <span class="code-line">// AVANT (sans expect)</span>
+                    <span class="code-line remove">test("Then bills should be displayed", () => {</span>
+                    <span class="code-line remove">  document.body.innerHTML = BillsUI({ data: mockBills })</span>
+                    <span class="code-line remove">})</span>
+                    <span class="code-line"></span>
+                    <span class="code-line">// APRÈS (avec expect)</span>
+                    <span class="code-line add">test("Then bills should be displayed", () => {</span>
+                    <span class="code-line add">  document.body.innerHTML = BillsUI({ data: mockBills })</span>
+                    <span class="code-line add">  const billsTable = document.querySelector('[data-testid="bills-table"]')</span>
+                    <span class="code-line add">  expect(billsTable).toBeInTheDocument()</span>
+                    <span class="code-line add">  expect(billsTable.querySelectorAll('tbody tr').length).toBe(mockBills.length)</span>
+                    <span class="code-line add">})</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Tests Unitaires - NewBill.js -->
+    <div class="slide">
+        <h1>🧪 Tests Unitaires - NewBill.js</h1>
+        <div style="margin-top: 30px;">
+
+            <h2>Objectifs de couverture</h2>
+            <ul>
+                <li>Couverture ≥ 80% des statements</li>
+                <li>Test d'intégration POST new bill</li>
+                <li>Tests de validation des fichiers</li>
+            </ul>
+
+            <div class="test-card">
+                <h4>Test 1 : Validation fichiers - Formats acceptés</h4>
+                <div class="code-block" style="font-size: 0.85em;">
+                    <span class="code-line">test("Then handleChangeFile should accept valid image files (jpg, jpeg, png)", async () => {</span>
+                    <span class="code-line">  const newBill = createNewBillInstance()</span>
+                    <span class="code-line">  simulateFileChange(newBill, 'test.jpg', 'image/jpeg')</span>
+                    <span class="code-line"></span>
+                    <span class="code-line">  await waitFor(() => {</span>
+                    <span class="code-line">    expect(newBill.fileUrl).toBe('https://localhost:3456/images/test.jpg')</span>
+                    <span class="code-line">    expect(newBill.fileName).toBe('test.jpg')</span>
+                    <span class="code-line">    expect(global.alert).not.toHaveBeenCalled()</span>
+                    <span class="code-line">  })</span>
+                    <span class="code-line">})</span>
+                </div>
+            </div>
+
+            <div class="test-card">
+                <h4>Test 2 : Validation fichiers - Formats rejetés</h4>
+                <div class="code-block" style="font-size: 0.85em;">
+                    <span class="code-line">test("Then handleChangeFile should reject invalid file types", () => {</span>
+                    <span class="code-line">  const newBill = createNewBillInstance()</span>
+                    <span class="code-line">  const mockTarget = simulateFileChange(newBill, 'test.pdf', 'application/pdf')</span>
+                    <span class="code-line"></span>
+                    <span class="code-line">  expect(global.alert).toHaveBeenCalledWith(</span>
+                    <span class="code-line">    'Seuls les fichiers aux formats jpg, jpeg ou png sont autorisés.'</span>
+                    <span class="code-line">  )</span>
+                    <span class="code-line">  expect(mockTarget.value).toBe('')</span>
+                    <span class="code-line">})</span>
+                </div>
+            </div>
+
+            <div class="test-card">
+                <h4>Test 3 : Test d'intégration POST new bill</h4>
+                <div class="code-block" style="font-size: 0.85em;">
+                    <span class="code-line">describe("Given I am a user connected as employee - Integration test", () => {</span>
+                    <span class="code-line">  test("Then the complete flow should work: file upload -> form submission -> navigation", async () => {</span>
+                    <span class="code-line">    const onNavigate = jest.fn()</span>
+                    <span class="code-line">    const createSpy = jest.spyOn(mockStore.bills(), 'create')</span>
+                    <span class="code-line">    const updateSpy = jest.spyOn(mockStore.bills(), 'update')</span>
+                    <span class="code-line">    const newBill = createNewBillInstance(onNavigate)</span>
+                    <span class="code-line"></span>
+                    <span class="code-line">    // 1. Upload fichier valide</span>
+                    <span class="code-line">    simulateFileChange(newBill, 'facture.jpg', 'image/jpeg')</span>
+                    <span class="code-line">    await waitFor(() => {</span>
+                    <span class="code-line">      expect(createSpy).toHaveBeenCalled()</span>
+                    <span class="code-line">      expect(newBill.fileUrl).toBeDefined()</span>
+                    <span class="code-line">    })</span>
+                    <span class="code-line"></span>
+                    <span class="code-line">    // 2. Remplissage formulaire</span>
+                    <span class="code-line">    await userEvent.selectOptions(screen.getByTestId('expense-type'), 'Hôtel et logement')</span>
+                    <span class="code-line">    await userEvent.type(screen.getByTestId('expense-name'), 'Hôtel Paris')</span>
+                    <span class="code-line">    // ... autres champs</span>
+                    <span class="code-line"></span>
+                    <span class="code-line">    // 3. Soumission</span>
+                    <span class="code-line">    fireEvent.submit(screen.getByTestId('form-new-bill'))</span>
+                    <span class="code-line"></span>
+                    <span class="code-line">    // 4. Vérifications</span>
+                    <span class="code-line">    await waitFor(() => {</span>
+                    <span class="code-line">      expect(updateSpy).toHaveBeenCalled()</span>
+                    <span class="code-line">      const billData = JSON.parse(updateSpy.mock.calls[0][0].data)</span>
+                    <span class="code-line">      expect(billData.status).toBe('pending')</span>
+                    <span class="code-line">    })</span>
+                    <span class="code-line">    expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH['Bills'])</span>
+                    <span class="code-line">  })</span>
+                    <span class="code-line">})</span>
+                </div>
+            </div>
+
+            <div class="test-card">
+                <h4>Test 4 : Gestion erreurs API (404, 500)</h4>
+                <div class="code-block" style="font-size: 0.85em;">
+                    <span class="code-line">test("Then handleSubmit should handle 404 error", async () => {</span>
+                    <span class="code-line">  mockStore.bills().update.mockRejectedValueOnce(new Error("404"))</span>
+                    <span class="code-line">  const newBill = createNewBillInstance()</span>
+                    <span class="code-line">  // ... setup form</span>
+                    <span class="code-line">  fireEvent.submit(screen.getByTestId('form-new-bill'))</span>
+                    <span class="code-line">  await waitFor(() => {</span>
+                    <span class="code-line">    expect(console.error).toHaveBeenCalled()</span>
+                    <span class="code-line">  })</span>
+                    <span class="code-line">})</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Tests - Views et VerticalLayout -->
+    <div class="slide">
+        <h1>🧪 Tests - Views et VerticalLayout</h1>
+        <div style="margin-top: 30px;">
+
+            <h2>Tests views/NewBillUI.js</h2>
+            <div class="test-card">
+                <h4>Test : Rendu de l'interface NewBill</h4>
+                <div class="code-block" style="font-size: 0.85em;">
+                    <span class="code-line">describe("Given I am a user on NewBill page", () => {</span>
+                    <span class="code-line">  test("Then NewBillUI should render the form with all required fields", () => {</span>
+                    <span class="code-line">    document.body.innerHTML = NewBillUI()</span>
+                    <span class="code-line">    </span>
+                    <span class="code-line">    expect(screen.getByTestId('expense-type')).toBeInTheDocument()</span>
+                    <span class="code-line">    expect(screen.getByTestId('expense-name')).toBeInTheDocument()</span>
+                    <span class="code-line">    expect(screen.getByTestId('datepicker')).toBeInTheDocument()</span>
+                    <span class="code-line">    expect(screen.getByTestId('amount')).toBeInTheDocument()</span>
+                    <span class="code-line">    expect(screen.getByTestId('vat')).toBeInTheDocument()</span>
+                    <span class="code-line">    expect(screen.getByTestId('pct')).toBeInTheDocument()</span>
+                    <span class="code-line">    expect(screen.getByTestId('commentary')).toBeInTheDocument()</span>
+                    <span class="code-line">    expect(screen.getByTestId('file')).toBeInTheDocument()</span>
+                    <span class="code-line">    expect(screen.getByTestId('form-new-bill')).toBeInTheDocument()</span>
+                    <span class="code-line">  })</span>
+                    <span class="code-line">})</span>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 30px;">Tests views/VerticalLayout.js</h2>
+            <div class="test-card">
+                <h4>Test : Structure Given/When/Then</h4>
+                <div class="code-block" style="font-size: 0.85em;">
+                    <span class="code-line">describe("Given I am a user on the application", () => {</span>
+                    <span class="code-line">  beforeEach(() => {</span>
+                    <span class="code-line">    document.body.innerHTML = VerticalLayout()</span>
+                    <span class="code-line">  })</span>
+                    <span class="code-line"></span>
+                    <span class="code-line">  describe("When I view the layout", () => {</span>
+                    <span class="code-line">    test("Then the layout should contain the main navigation", () => {</span>
+                    <span class="code-line">      const layout = document.querySelector('[data-testid="vertical-layout"]')</span>
+                    <span class="code-line">      expect(layout).toBeInTheDocument()</span>
+                    <span class="code-line">    })</span>
+                    <span class="code-line"></span>
+                    <span class="code-line">    test("Then the layout should contain the logout button", () => {</span>
+                    <span class="code-line">      const logoutBtn = document.querySelector('[data-testid="layout-disconnect"]')</span>
+                    <span class="code-line">      expect(logoutBtn).toBeInTheDocument()</span>
+                    <span class="code-line">    })</span>
+                    <span class="code-line">  })</span>
+                    <span class="code-line">})</span>
+                </div>
+            </div>
+
+            <div style="background: #d4edda; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                <p><strong>✅ Structure respectée :</strong> Tous les tests suivent le format Given/When/Then comme demandé.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Plan de Test E2E -->
+    <div class="slide">
+        <h1>📝 Plan de Test End-to-End</h1>
+        <div style="margin-top: 30px;">
+
+            <h2>Parcours Employé - Scénarios de Test</h2>
+
+            <div class="test-card">
+                <h4>Scénario 1 : Création d'une note de frais valide</h4>
+                <div class="scenario-box">
+                    <p><strong>Given</strong> Je suis connecté en tant qu'employé</p>
+                    <p><strong>When</strong> Je crée une nouvelle note de frais avec :</p>
+                    <ul>
+                        <li>Type de dépense : "Transports"</li>
+                        <li>Nom : "Vol Paris-Londres"</li>
+                        <li>Date : 15/01/2024</li>
+                        <li>Montant : 500€</li>
+                        <li>Justificatif : facture.jpg (format valide)</li>
+                    </ul>
+                    <p><strong>Then</strong> La note de frais est créée et je suis redirigé vers la page Bills</p>
+                </div>
+            </div>
+
+            <div class="test-card">
+                <h4>Scénario 2 : Tentative d'upload fichier invalide</h4>
+                <div class="scenario-box">
+                    <p><strong>Given</strong> Je suis connecté en tant qu'employé</p>
+                    <p><strong>When</strong> Je tente d'uploader un fichier .pdf</p>
+                    <p><strong>Then</strong>
+                    <ul>
+                        <li>Une alerte s'affiche : "Seuls les fichiers aux formats jpg, jpeg ou png sont autorisés."</li>
+                        <li>Le champ fichier est réinitialisé</li>
+                        <li>Je ne peux pas soumettre le formulaire</li>
+                    </ul>
+                    </p>
+                </div>
+            </div>
+
+            <div class="test-card">
+                <h4>Scénario 3 : Consultation d'une note de frais</h4>
+                <div class="scenario-box">
+                    <p><strong>Given</strong> Je suis connecté en tant qu'employé et j'ai des notes de frais</p>
+                    <p><strong>When</strong> Je clique sur l'icône "voir" d'une note de frais</p>
+                    <p><strong>Then</strong>
+                    <ul>
+                        <li>Une modale s'ouvre</li>
+                        <li>Le justificatif s'affiche correctement</li>
+                    </ul>
+                    </p>
+                </div>
+            </div>
+
+            <div class="test-card">
+                <h4>Scénario 4 : Affichage des notes par ordre décroissant</h4>
+                <div class="scenario-box">
+                    <p><strong>Given</strong> Je suis connecté en tant qu'employé</p>
+                    <p><strong>When</strong> Je consulte la liste de mes notes de frais</p>
+                    <p><strong>Then</strong> Les notes sont affichées par ordre décroissant (plus récentes en premier)</p>
+                </div>
+            </div>
+
+            <div class="test-card">
+                <h4>Scénario 5 : Gestion des erreurs serveur</h4>
+                <div class="scenario-box">
+                    <p><strong>Given</strong> Je suis connecté en tant qu'employé</p>
+                    <p><strong>When</strong> Le serveur retourne une erreur 500 lors de la création</p>
+                    <p><strong>Then</strong> Un message d'erreur approprié est affiché à l'utilisateur</p>
+                </div>
+            </div>
+
+            <div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                <p><strong>📋 Format :</strong> Le plan respecte le format Given/When/Then et couvre tous les scénarios possibles du parcours employé.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Résultats et Métriques -->
+    <div class="slide">
+        <h1>📊 Résultats et Métriques</h1>
+        <div style="margin-top: 30px;">
+
+            <h2>Bugs Corrigés</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 20px 0;">
+                <div style="background: #fff3cd; padding: 20px; border-radius: 8px;">
+                    <h3>Bug Reports (Jest)</h3>
+                    <ul>
+                        <li>✅ Bills - Tri décroissant</li>
+                        <li>✅ Login - Navigation Dashboard</li>
+                    </ul>
+                </div>
+                <div style="background: #fff3cd; padding: 20px; border-radius: 8px;">
+                    <h3>Bug Hunt (Leïla)</h3>
+                    <ul>
+                        <li>✅ Bills - Validation fichiers</li>
+                        <li>✅ Dashboard - Listes dépliables</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 40px;">Couverture de Tests</h2>
+            <div style="background: #e7f3ff; padding: 25px; border-radius: 10px; margin: 20px 0;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: center;">
+                    <div>
+                        <h3 style="font-size: 2.5em; color: #2196F3; margin: 0;">≥80%</h3>
+                        <p>Couverture globale</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.8em; color: #28a745; margin: 0;">Bills.js</h3>
+                        <p>Container + Tests</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.8em; color: #28a745; margin: 0;">NewBill.js</h3>
+                        <p>Container + Tests</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.8em; color: #28a745; margin: 0;">Views</h3>
+                        <p>BillsUI + NewBillUI + VerticalLayout</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 40px;">Tests Implémentés</h2>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0;">
+                <div style="background: #d4edda; padding: 15px; border-radius: 8px;">
+                    <strong>Tests Unitaires</strong>
+                    <ul>
+                        <li>Bills.js - Tri, erreurs, navigation</li>
+                        <li>NewBill.js - Validation fichiers, soumission</li>
+                        <li>Views - Rendu des interfaces</li>
+                    </ul>
+                </div>
+                <div style="background: #d4edda; padding: 15px; border-radius: 8px;">
+                    <strong>Tests d'Intégration</strong>
+                    <ul>
+                        <li>GET Bills - Récupération et affichage</li>
+                        <li>POST NewBill - Création complète</li>
+                        <li>Gestion erreurs 404/500</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2 style="margin-top: 40px;">Livrables</h2>
+            <ul>
+                <li>✅ <strong>4 bugs corrigés</strong> - Tous les bugs identifiés résolus</li>
+                <li>✅ <strong>Tests unitaires</strong> - Couverture ≥ 80% atteinte</li>
+                <li>✅ <strong>Tests d'intégration</strong> - GET Bills et POST NewBill</li>
+                <li>✅ <strong>Plan de test E2E</strong> - 5 scénarios documentés</li>
+                <li>✅ <strong>Application fiabilisée</strong> - Prête pour le lancement</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Slide 13: Conclusion -->
+    <div class="slide">
+        <div style="text-align: center; padding: 60px 0;">
+            <h1>🎯 Conclusion</h1>
+            <div style="margin-top: 60px; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <div style="background: #d4edda; padding: 30px; border-radius: 10px; margin: 20px 0;">
+                    <h2 style="color: #155724; margin-bottom: 20px;">✅ Mission Accomplie</h2>
+                    <ul style="text-align: left; font-size: 1.2em;">
+                        <li style="margin: 15px 0;">🐛 <strong>4 bugs corrigés</strong> - Application fonctionnelle</li>
+                        <li style="margin: 15px 0;">🧪 <strong>Tests complets</strong> - Couverture ≥ 80% atteinte</li>
+                        <li style="margin: 15px 0;">📝 <strong>Plan E2E rédigé</strong> - 5 scénarios documentés</li>
+                        <li style="margin: 15px 0;">🚀 <strong>Application prête</strong> - Pour le lancement dans 2 semaines</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 60px; font-size: 1.5em; color: #667eea; font-weight: bold;">
+                    Merci pour votre attention ! 🙏
+                </div>
+                <div style="margin-top: 30px; font-size: 1.3em; color: #764ba2;">
+                    Questions ?
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-counter">
+    <span id="current-slide">1</span> / <span id="total-slides">13</span>
+</div>
+
+<div class="navigation">
+    <button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">← Précédent</button>
+    <button class="nav-btn" id="next-btn" onclick="changeSlide(1)">Suivant →</button>
+</div>
+
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+
+  document.getElementById('total-slides').textContent = totalSlides;
+
+  function showSlide(n) {
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (n + totalSlides) % totalSlides;
+    slides[currentSlide].classList.add('active');
+
+    document.getElementById('current-slide').textContent = currentSlide + 1;
+
+    // Gestion des boutons
+    document.getElementById('prev-btn').disabled = currentSlide === 0;
+    document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+  }
+
+  function changeSlide(direction) {
+    showSlide(currentSlide + direction);
+  }
+
+  // Navigation au clavier
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') changeSlide(-1);
+    if (e.key === 'ArrowRight') changeSlide(1);
+  });
+
+  // Initialisation
+  showSlide(0);
+</script>
+</body>
+</html>

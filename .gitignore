@@ -1,0 +1,29 @@
+# IDE
+.idea/
+.vscode/
+.cursor/
+
+# OS
+.DS_Store
+
+# Dependencies
+node_modules/
+
+# Coverage reports
+coverage/
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
