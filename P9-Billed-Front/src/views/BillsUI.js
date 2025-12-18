@@ -3,13 +3,14 @@ import ErrorPage from "./ErrorPage.js"
 import LoadingPage from "./LoadingPage.js"
 
 import Actions from './Actions.js'
+import {formatDate} from "../app/format.js";
 
 const row = (bill) => {
   return (`
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${bill.date}</td>
+      <td data-date="${bill.date}" data-testid="bill-date">${formatDate(bill.date)}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -20,11 +21,25 @@ const row = (bill) => {
   }
 
 const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+    if (!data || !data.length) return ""
+
+    const compareDatesDesc = (a, b) => {
+        const timeA = Date.parse(a.date)
+        const timeB = Date.parse(b.date)
+        if (!Number.isNaN(timeA) && !Number.isNaN(timeB)) {
+            return timeB - timeA
+        }
+        return 0
+    }
+
+    return [...data]
+        .sort(compareDatesDesc)
+        .map(bill => row(bill))
+        .join("")
 }
 
 export default ({ data: bills, loading, error }) => {
-  
+
   const modal = () => (`
     <div class="modal fade" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -47,7 +62,7 @@ export default ({ data: bills, loading, error }) => {
   } else if (error) {
     return ErrorPage(error)
   }
-  
+
   return (`
     <div class='layout'>
       ${VerticalLayout(120)}

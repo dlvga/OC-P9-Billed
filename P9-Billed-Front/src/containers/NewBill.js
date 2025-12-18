@@ -20,6 +20,14 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
+    // Check MIME type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']
+
+    if (!allowedTypes.includes(file.type)) {
+        alert('Seuls les fichiers aux formats jpg, jpeg ou png sont autorisés.')
+        e.target.value = ''
+        return
+    }
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)

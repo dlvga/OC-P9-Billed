@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de test End-to-End du parcours employé</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #ffffff;
+        }
+        h1 {
+            color: #0E5AE5;
+            border-bottom: 3px solid #0E5AE5;
+            padding-bottom: 15px;
+            margin-bottom: 40px;
+            font-size: 2em;
+        }
+        .scenario {
+            margin-bottom: 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .scenario-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #0E5AE5;
+            margin-bottom: 15px;
+        }
+        .scenario-row {
+            margin: 10px 0;
+            padding: 8px 0;
+        }
+        .scenario-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 80px;
+            color: #333;
+        }
+        .scenario-content {
+            display: inline-block;
+            width: calc(100% - 90px);
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body>
+    <h1>Plan de test End-to-End du parcours employé</h1>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 1</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis un visiteur (non connecté).</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je ne remplis pas le champ e-mail ou le champ password du login employé et je clique sur le bouton "Se connecter".</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">Je reste sur la page Login et je suis invité à remplir le champ manquant.</span>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 2</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis un visiteur (non connecté).</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je remplis le champ e-mail du login employé au mauvais format (sans la forme chaîne@chaîne) et je clique sur le bouton "Se connecter".</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">Je reste sur la page Login et je suis invité à remplir le champ e-mail au bon format.</span>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 3</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis un visiteur (non connecté).</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je remplis le champ e-mail du login employé au bon format (sous la forme chaîne@chaîne), le champ password du login employé et je clique sur le bouton "Se connecter".</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">Je suis envoyé sur la page des notes de frais (Bills).</span>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 4</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis connecté en tant qu'employé.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je suis sur la page des notes de frais.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">Les notes de frais sont affichées dans un tableau et sont ordonnées de la plus récente à la plus ancienne. L'icône de note de frais dans la barre verticale est mise en surbrillance.</span>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 5</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis connecté en tant qu'employé et je suis sur la page des notes de frais.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je clique sur l'icône œil d'une note de frais dans la colonne "Actions".</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">Une modale apparaît avec le justificatif de la note de frais (image).</span>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 6</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis connecté en tant qu'employé et je suis sur la page des notes de frais.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je clique sur le bouton "Nouvelle note de frais".</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">Je suis envoyé sur la page de création de note de frais (NewBill). L'icône mail dans la barre verticale est mise en surbrillance.</span>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 7</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis connecté en tant qu'employé et je suis sur la page de création de note de frais.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je sélectionne un fichier justificatif qui n'est pas au format jpg, jpeg ou png.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">Un message d'alerte apparaît indiquant "Seuls les fichiers aux formats jpg, jpeg ou png sont autorisés." et le champ fichier est réinitialisé.</span>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 8</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis connecté en tant qu'employé et je suis sur la page de création de note de frais.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je ne remplis pas tous les champs obligatoires (type de dépense, date, montant TTC, pourcentage TVA, justificatif) et je clique sur le bouton "Envoyer".</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">Je reste sur la page de création de note de frais et je suis invité à remplir les champs manquants.</span>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 9</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis connecté en tant qu'employé et je suis sur la page de création de note de frais.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je remplis tous les champs obligatoires (type de dépense, date, montant TTC, pourcentage TVA, justificatif au format jpg/jpeg/png) et je clique sur le bouton "Envoyer".</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">La note de frais est créée avec le statut "en attente" et je suis redirigé vers la page des notes de frais. La nouvelle note de frais apparaît dans le tableau avec le statut "En attente".</span>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 10</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis connecté en tant qu'employé et je suis sur la page des notes de frais.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je clique sur le bouton "Se déconnecter" de la barre verticale.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">Je suis envoyé à la page Login.</span>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-title">Scénario 11</div>
+        <div class="scenario-row">
+            <span class="scenario-label">Given</span>
+            <span class="scenario-content">Je suis connecté en tant qu'employé et je suis sur la page des notes de frais.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">When</span>
+            <span class="scenario-content">Je clique sur le bouton "Retour" en arrière de la navigation.</span>
+        </div>
+        <div class="scenario-row">
+            <span class="scenario-label">Then</span>
+            <span class="scenario-content">Je reste sur la page des notes de frais.</span>
+        </div>
+    </div>
+
+</body>
+</html>
